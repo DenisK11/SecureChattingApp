@@ -111,7 +111,7 @@ io.on('connection', socket => {
 
         if(room)
         {
-            io.to(room).emmit('message', buildMessage(name, text))
+            io.to(room).emit('message', buildMessage(name, text))
         }
     })
 
@@ -121,7 +121,7 @@ io.on('connection', socket => {
 
         if(room)
         {
-            socket.broadcast.to(room).emmit('activity', name)
+            socket.broadcast.to(room).emit('activity', name)
         }
     })
 })
