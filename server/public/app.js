@@ -1,5 +1,6 @@
-const socket = io('https://securechattingapp.onrender.com')
+const socket = io('ws://localhost:3500')
 
+const pwdInput = document.querySelector('#pwd')
 const msgInput = document.querySelector('#message')
 const nameInput = document.querySelector('#name')
 const chatRoom = document.querySelector('#room')
@@ -8,9 +9,78 @@ const usersList = document.querySelector('.user-list')
 const roomList = document.querySelector('.room-list')
 const chatDisplay = document.querySelector('.chat-display')
 
-function sendMessage(e) {
+const { subtle } = globalThis.crypto;
+
+generateKey()
+
+async function generateKey() 
+{
+  const key = await subtle.generateKey(
+    {
+    name: "RSA-OAEP",
+    modulusLength: 4096,
+    publicExponent: new Uint8Array([1, 0, 1]),
+    hash: { name: "SHA-256" },
+  }, true, ['encrypt', 'decrypt']);
+
+  console.log(key)
+
+  const publicKey = await window.crypto.subtle.exportKey('jwk', key.publicKey)
+  const privateKey = await window.crypto.subtle.exportKey('jwk', key.privateKey)
+
+  console.log(publicKey)
+  console.log(privateKey)
+  
+  console.log("The value of the public key is:\n", publicKey.n)
+  console.log("The value of the private key is:\n", privateKey.n)
+
+  publicKey.key_ops = ['encrypt'];
+  privateKey.key_ops = ['decrypt'];
+  publicKey.alg = 'RSA-OAEP-256';
+  privateKey.alg = 'RSA-OAEP-256';
+
+  publicKeyReloaded = await window.crypto.subtle.importKey("jwk", publicKey, {name: "RSA-OAEP", hash: {name: "SHA-256"}}, true, ["encrypt"]);    
+  privateKeyReloaded = await window.crypto.subtle.importKey("jwk", privateKey,{name: "RSA-OAEP", hash: {name: "SHA-256"}}, true, ["decrypt"]);    
+  
+  console.log(publicKeyReloaded)
+  console.log(privateKeyReloaded)
+
+} 
+
+function reloadMessage(arrayBuffer) {
+    return window.btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+}
+
+async function Encrypt(message) 
+{
+    const ec = new TextEncoder()
+    const encodedText = ec.encode(message)
+    const encryptedText = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKeyReloaded, encodedText)
+
+    console.log(reloadMessage(encryptedText));
+
+    return encryptedText
+  }
+  
+async function Decrypt(encryptedText)
+{
+    const dec = new TextDecoder();
+    const decryptedText = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, privateKeyReloaded, encryptedText)
+
+    const original = dec.decode(decryptedText)
+    console.log(original);
+
+    return original
+  } 
+
+function sendMessage(e) 
+{
     e.preventDefault()
-    if (nameInput.value && msgInput.value && chatRoom.value) {
+    if (nameInput.value && msgInput.value && chatRoom.value) 
+    {
+        const encMsg = Encrypt(msgInput.value)
+        const decMsg = encMsg.then((result) => {Decrypt(result)})
+
         socket.emit('message', {
             name: nameInput.value,
             text: msgInput.value
@@ -22,7 +92,8 @@ function sendMessage(e) {
 
 function enterRoom(e) {
     e.preventDefault()
-    if (nameInput.value && chatRoom.value) {
+    const roomDoesNotExist = 1
+    if (nameInput.value && chatRoom.value && pwdInput.value) {
         socket.emit('enterRoom', {
             name: nameInput.value,
             room: chatRoom.value

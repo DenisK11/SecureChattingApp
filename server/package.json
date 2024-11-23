@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "crypto-browserify": "^3.12.1",
+    "crypto-js": "^4.2.0",
     "express": "^4.21.1",
     "socket.io": "^4.8.1"
   },
