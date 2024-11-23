@@ -25,6 +25,13 @@ const UsersState = {
     }
 }
 
+const RoomsState = {
+    rooms: [],
+    setRooms: function (newUsersArray) {
+        this.rooms = newUsersArray
+    }
+}
+
 const io = new Server(expressServer, {
     cors: {
         origin: process.env.NODE_ENV === "production" ? false : ["http://localhost:5500", "http://127.0.0.1:5500"]
@@ -47,7 +54,7 @@ io.on('connection', socket => {
             io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`))
         }
 
-        const user = activateUser(socket.id, name, room)
+        const user = activateUser(socket.id, name, room, pwd)
 
         // Cannot update previous room users list until after the state update in activate user 
         if (prevRoom) {
@@ -126,13 +133,23 @@ function buildMsg(name, text) {
 }
 
 // User functions 
-function activateUser(id, name, room) {
-    const user = { id, name, room }
+function activateUser(id, name, room, pwd) {
+    const user = { id, name, room, pwd }
     UsersState.setUsers([
         ...UsersState.users.filter(user => user.id !== id),
         user
     ])
     return user
+}
+
+function activateRoom(pwd)
+{
+    const rooms = { pwd }
+    RoomsState.setUsers([
+        ...RoomsState.rooms.filter(room => room.pwd !== pwd),
+        rooms
+    ])
+    return rooms
 }
 
 function userLeavesApp(id) {
