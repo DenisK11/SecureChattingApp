@@ -1,4 +1,4 @@
-const socket = io('ws://localhost:3500')
+const socket = io('https://securechattingapp.onrender.com')
 
 const pwdInput = document.querySelector('#pwd')
 const msgInput = document.querySelector('#message')
@@ -8,6 +8,7 @@ const activity = document.querySelector('.activity')
 const usersList = document.querySelector('.user-list')
 const roomList = document.querySelector('.room-list')
 const chatDisplay = document.querySelector('.chat-display')
+const allRooms = new String
 
 const { subtle } = globalThis.crypto;
 
@@ -93,12 +94,14 @@ function sendMessage(e)
 function enterRoom(e) {
     e.preventDefault()
     const roomDoesNotExist = 1
-    if (nameInput.value && chatRoom.value && pwdInput.value) {
+    if (nameInput.value && 
+        chatRoom.value && 
+        pwdInput.value) {
         socket.emit('enterRoom', {
             name: nameInput.value,
             room: chatRoom.value
         })
-    }
+    }   
 }
 
 document.querySelector('.form-msg')
@@ -170,12 +173,16 @@ function showUsers(users) {
 
 function showRooms(rooms) {
     roomList.textContent = ''
+    allRooms.textContent = ''
     if (rooms) {
         roomList.innerHTML = '<em>Active Rooms:</em>'
         rooms.forEach((room, i) => {
             roomList.textContent += ` ${room}`
-            if (rooms.length > 1 && i !== rooms.length - 1) {
+            allRooms.textContent += room
+            if (rooms.length > 1 && i !== rooms.length - 1) 
+                {
                 roomList.textContent += ","
+                allRooms.textContent += ","
             }
         })
     }
