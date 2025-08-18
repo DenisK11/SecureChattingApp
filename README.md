@@ -23,13 +23,13 @@ This project demonstrates how secure communication can be achieved in a chat env
 
 📂 Project Structure
     /server
-    ├── node_modules/        # dependencies
-    ├── index.html           # frontend UI
-    ├── style.css            # UI styling
-    ├── index.js             # client-side logic
-    ├── app.js               # server logic & crypto integration
-    ├── package.json         # dependencies & metadata
-    └── README.md            # project documentation
+    - node_modules/        # dependencies
+    - index.html           # frontend UI
+    - style.css            # UI styling
+    - index.js             # client-side logic
+    - app.js               # server logic & crypto integration
+    - package.json         # dependencies & metadata
+    - README.md            # project documentation
 
 ⚙️ Installation
 
@@ -52,7 +52,8 @@ Open the app in your browser:
 
 
 Or use the deployed version here:
-👉 Secure Chatting App on Render
+
+    👉 Secure Chatting App on Render
 
 DISCALMIER: The app does not have automatic deployment, so it may not be online.
 
