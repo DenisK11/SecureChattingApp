@@ -22,6 +22,7 @@ This project demonstrates how secure communication can be achieved in a chat env
     HTML, CSS – frontend
 
 📂 Project Structure
+
     /server
     - node_modules/        # dependencies
     - index.html           # frontend UI
